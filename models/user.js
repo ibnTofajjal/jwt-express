@@ -4,13 +4,14 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
     min: 4,
     max: 25,
   },
   password: {
     type: String,
     required: true,
-    min: 4,
+    min: 6,
     max: 255,
   },
   emailConfirmed: {

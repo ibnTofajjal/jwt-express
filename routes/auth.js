@@ -11,6 +11,6 @@ const router = express.Router();
 // Routes
 router.get("/test", [rateLimiter(10, 10), verifyToken], authControllers.test);
 
-router.post("/token", authControllers.token);
+router.post("/register", authControllers.register);
 
 module.exports = router;
