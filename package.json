@@ -1,0 +1,20 @@
+{
+  "name": "jwt-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "startdev": "env-cmd -e dev nodemon index.js",
+    "startprod": "env-cmd -e prod nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joynl Bin Tofajjal (Zayn Al-Abedin)",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^6.7.1"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
+  }
+}
