@@ -48,7 +48,29 @@ const register = async (req, res) => {
           email: user.email,
         },
         process.env.SECRET_ACCESS_KEY,
-        { expiresIn: process.env.ACCESS_TOKE_EXPIRY }
+        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+      );
+      // Generate Refresh Token
+      const refreshToken = jwt.sign(
+        {
+          _id: user.id,
+          email: user.email,
+        },
+        process.env.SECRET_REFRESH_KEY,
+        { expiresIn: process.env.ACCESS_REFRESH_EXPIRY }
+      );
+
+      // Assign the token to user and save
+      await User.updateOne(
+        { email: user.email },
+        {
+          $push: {
+            "security.tokens": {
+              refreshToken: refreshToken,
+              createdAt: new Date(),
+            },
+          },
+        }
       );
 
       res
@@ -59,6 +81,7 @@ const register = async (req, res) => {
             sataus: 200,
             message: "REGISTER_SUCCESS",
             acceessToken: acceessToken,
+            refreshToken: refreshToken,
             user: {
               id: user.id,
               email: user.email,
@@ -67,6 +90,7 @@ const register = async (req, res) => {
         });
     }
   } catch (err) {
+    console.log(err);
     let errorMessage;
 
     if (err.keyPattern.email === 1) {
@@ -79,6 +103,21 @@ const register = async (req, res) => {
       error: {
         sataus: 400,
         message: errorMessage,
+      },
+    });
+  }
+};
+
+const token = async (req, res) => {
+  try {
+    const refreshToken = req.body.refreshToken;
+
+    // verify if the token is valid - if not, don't authorise to re-authenticate
+  } catch (err) {
+    res.status(400).json({
+      error: {
+        sataus: 400,
+        message: "BAD_REQUEST",
       },
     });
   }
