@@ -113,6 +113,53 @@ const token = async (req, res) => {
     const refreshToken = req.body.refreshToken;
 
     // verify if the token is valid - if not, don't authorise to re-authenticate
+    try {
+      const decodeRefreshToken = jwt.verify(
+        refreshToken,
+        process.env.SECRET_REFRESH_KEY
+      );
+      const user = await User.findOne({ email: decodeRefreshToken.email });
+      const exixtingRefreshTokens = user.security.tokens;
+
+      // Check if refresh token is in document
+      if (
+        exixtingRefreshTokens.some(
+          (token) => token.refreshToken === refreshToken
+        )
+      ) {
+        // Generate new Access Token
+        const accessToken = jwt.sign(
+          {
+            _id: user.id,
+            email: user.email,
+          },
+          process.env.SECRET_ACCESS_KEY,
+          { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+        );
+        // Send new access token
+        res.status(200).json({
+          success: {
+            sataus: 200,
+            message: "ACCESS_TOKEN_GENERATED",
+            accessToken: accessToken,
+          },
+        });
+      } else {
+        res.status(400).json({
+          error: {
+            sataus: 400,
+            message: "INVALID_REFRESH_TOKEN",
+          },
+        });
+      }
+    } catch (err) {
+      res.status(400).json({
+        error: {
+          sataus: 400,
+          message: "INVALID_REFRESH_TOKEN",
+        },
+      });
+    }
   } catch (err) {
     res.status(400).json({
       error: {
@@ -143,6 +190,6 @@ const test = async (req, res) => {
   }
 };
 
-module.exports = { test, register };
+module.exports = { test, register, token };
 
 //16-50

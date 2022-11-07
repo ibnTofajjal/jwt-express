@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
       try {
         req.user = jwt.verify(token, process.env.SECRET_ACCESS_KEY);
         next();
-      } catch (error) {
+      } catch (err) {
         res.status(401).json({ error: 401, message: "INVALID_TOKEN" });
       }
     } else {
@@ -16,7 +16,7 @@ const auth = (req, res, next) => {
         .status(400)
         .json({ error: { status: 400, message: "ACCESS_DENIED" } });
     }
-  } catch (error) {
+  } catch (err) {
     res.status(400).json({ error: { status: 400, message: "ACCESS_DENIED" } });
   }
 };
